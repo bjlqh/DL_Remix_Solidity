@@ -10,7 +10,7 @@ contract BigBank is Bank {
     }
 
     modifier limitAmount() {
-        require(msg.value > 10**15, "Must send ETH");
+        require(msg.value > 10**15, "Must send more than 0.001eth");
         _;
     }
 
