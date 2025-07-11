@@ -23,9 +23,7 @@ contract Bank {
         deposit();
     }
 
-    function deposit() public payable {
-        require(msg.value > 0, "Must send ETH");
-
+    function deposit() public payable virtual {
         if(balances[msg.sender] == 0){
             //添加新用户
             depositors.push(msg.sender);
@@ -69,7 +67,7 @@ contract Bank {
     }
 
     //只有管理员才能提走资金
-    function withdraw() external {
+    function withdraw() public virtual {
         require(msg.sender == owner, "Not the owner.");
         payable(owner).transfer(address(this).balance);
 
