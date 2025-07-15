@@ -13,6 +13,7 @@ contract TokenBank {
         tokenAddress = _tokenAddress;
     }
 
+
     //记录每个地址存的数量
     function deposit(uint amount) public {
         require(amount > 0, "amount must be greater than 0");
@@ -34,6 +35,11 @@ contract TokenBank {
         bool succ = ERC20(tokenAddress).transfer(msg.sender, amount);
 
         require(succ, "failed to transfer");
+    }
+
+    function tokensReceived(address sender, uint amount) external returns (bool){
+        balances[sender] += amount;
+        return true;
     }
 
 }
