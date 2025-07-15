@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
+
 contract TokenBank {
 
     mapping (address => uint256) public balances;
@@ -35,11 +36,6 @@ contract TokenBank {
         bool succ = ERC20(tokenAddress).transfer(msg.sender, amount);
 
         require(succ, "failed to transfer");
-    }
-
-    function tokensReceived(address sender, uint amount) external returns (bool){
-        balances[sender] += amount;
-        return true;
     }
 
 }
