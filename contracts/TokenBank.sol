@@ -2,16 +2,17 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
+import "./MyToken.sol";
 
 contract TokenBank {
 
     mapping (address => uint256) public balances;
 
-    address private tokenAddress;
+    //address private tokenAddress;
+    MyToken private token;
 
     constructor(address _tokenAddress){
-        tokenAddress = _tokenAddress;
+        token = MyToken(_tokenAddress);
     }
 
 
@@ -20,7 +21,7 @@ contract TokenBank {
         require(amount > 0, "amount must be greater than 0");
 
         //转移token到当前合约
-        bool success = ERC20(tokenAddress).transferFrom(msg.sender, address(this), amount);
+        bool success = token.transferFrom(msg.sender, address(this), amount);
         require(success, "failed to transferFrom");
 
         //记录
@@ -33,7 +34,7 @@ contract TokenBank {
         require(balances[msg.sender] >= amount, "Insufficient Balance");
 
         balances[msg.sender] -= amount;
-        bool succ = ERC20(tokenAddress).transfer(msg.sender, amount);
+        bool succ = token.transfer(msg.sender, amount);
 
         require(succ, "failed to transfer");
     }
