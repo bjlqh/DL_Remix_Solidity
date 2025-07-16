@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./TokenBankV2.sol";
+import "./ITokenReceiver.sol";
+
 
 contract MyToken is ERC20 {
 
@@ -14,13 +15,14 @@ contract MyToken is ERC20 {
 
     event TransferContract(address recipient, uint256 amount);
 
-    function transferWithCallback(address recipient, uint256 amount) external {
+    function transferWithCallback(address recipient, uint256 amount, bytes calldata data) external returns (bool){
         _transfer(msg.sender, recipient, amount);
         //如果recipient是合约地址
         if(isContract(recipient)){
-            bool rv = TokenBankV2(recipient).tokensReceived(msg.sender,amount);
+            bool rv = ITokenReceiver(recipient).tokensReceived(msg.sender,amount, data);
             require(rv, "No tokensReceived");
         }
+        return true;
     }
 
     function isContract(address account) internal view returns (bool) {

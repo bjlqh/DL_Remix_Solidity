@@ -2,8 +2,10 @@
 pragma solidity ^0.8.0;
 
 import "./TokenBank.sol";
+import "./ITokenReceiver.sol";
 
-contract TokenBankV2 is TokenBank {
+
+contract TokenBankV2 is TokenBank, ITokenReceiver{
 
     address private tokenAddress;
     
@@ -11,12 +13,11 @@ contract TokenBankV2 is TokenBank {
         tokenAddress = _tokenAddress;
     }
 
-    event Recevied(address sender);
-
-    function tokensReceived(address sender, uint amount) external returns (bool){
-        emit Recevied(sender);
+    event Recevied(address indexed sender, bytes indexed data);
+    function tokensReceived(address spender, uint amount, bytes memory data) external returns (bool){
+        emit Recevied(spender, data);
         require(msg.sender == tokenAddress, "unauthorized contract!");
-        balances[sender] += amount;
+        balances[spender] += amount;
         return true;
     }
 
