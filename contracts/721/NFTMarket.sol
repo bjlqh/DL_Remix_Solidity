@@ -41,7 +41,7 @@ contract NFTMarket is ITokenReceiver{
         require(success, "Token transferFrom failed");
 
         //转移所有权给买家
-        nft.safeTransferFrom(item.seller, msg.sender, tokenId);
+        nft.safeTransferFrom(address(this), msg.sender, tokenId);
         
         //清除
         delete listings[tokenId];
@@ -60,8 +60,8 @@ contract NFTMarket is ITokenReceiver{
         require(token.transfer(item.seller, item.price), "Transfer to seller failed");
         
         //转移所有权给买家
-        nft.safeTransferFrom(item.seller, spender, tokenId);
-        
+        nft.safeTransferFrom(address(this), spender, tokenId);
+                
         //清除
         delete listings[tokenId];
         return true;
