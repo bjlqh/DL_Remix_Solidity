@@ -35,12 +35,16 @@ contract NFTMarket is ITokenReceiver{
         require(item.seller != address(0), "NFT not listed");
         require(msg.sender != item.seller, "Cannot buy your own NFT");
         require(token.balanceOf(msg.sender) >= item.price, "Not enough tokens to buy NFT");
-
-        bytes memory data = abi.encode(tokenId);
         
         //支付token到market
-        bool success = token.transferWithCallback(address(this), item.price, data);
-        require(success, "Token transfer failed");
+        bool success = token.transferFrom(msg.sender, address(this), item.price);
+        require(success, "Token transferFrom failed");
+
+        //转移所有权给买家
+        nft.safeTransferFrom(item.seller, msg.sender, tokenId);
+        
+        //清除
+        delete listings[tokenId];
     }
 
     //平台收款
