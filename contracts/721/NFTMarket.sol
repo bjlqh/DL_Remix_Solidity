@@ -3,8 +3,9 @@ pragma solidity ^0.8.0;
 
 import "./MyERC721.sol";
 import "contracts/MyToken.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-contract NFTMarket is ITokenReceiver{
+contract NFTMarket is ITokenReceiver, IERC721Receiver {
 
     struct Listing {
         address seller;
@@ -26,6 +27,7 @@ contract NFTMarket is ITokenReceiver{
         //token不属于owner
         require(nft.ownerOf(tokenId) == msg.sender, "Not owner");
         require(price > 0, "Price must be greater than 0");
+        nft.safeTransferFrom(msg.sender, address(this), tokenId);
         listings[tokenId] = Listing({seller: msg.sender, price: price});
     }
 
@@ -61,10 +63,24 @@ contract NFTMarket is ITokenReceiver{
         
         //转移所有权给买家
         nft.safeTransferFrom(address(this), spender, tokenId);
-                
+
         //清除
         delete listings[tokenId];
         return true;
+    }
+
+    /**
+     * 当 NFT 合约调用 safeTransferFrom 把 NFT 转给 NFTMarket 时，
+     * 会检查 NFTMarket 是否实现了 onERC721Received，
+     * 如果没有就会报错。
+     */
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        return this.onERC721Received.selector;
     }
 
 }
